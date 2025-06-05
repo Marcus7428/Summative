@@ -1,0 +1,49 @@
+.featureSection {
+    padding: 2rem;
+    text-align: center;
+    background-color: #818181;
+}
+
+.featureTitle {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.movieGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    justify-items: center;
+}
+
+.movieCard {
+    width: 100%;
+    max-width: 350px;
+    text-align: center;
+    background-color: rgb(180, 180, 180);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    padding-bottom: 1rem;
+}
+
+.movieCard:hover {
+    transform: scale(1.05);
+}
+
+.moviePoster {
+    width: 100%;
+    height: 450px;
+    object-fit: cover;
+    border-bottom: 2px solid #ffffff;
+}
+
+.movieTitle {
+    margin: 0.5rem 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+}

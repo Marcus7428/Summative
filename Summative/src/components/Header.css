@@ -1,0 +1,159 @@
+.navBar {
+    background-color: rgb(29, 27, 27);
+    z-index: 1000;
+    border-bottom: 4px solid rgb(252, 151, 0);
+    height: 100px;
+    top: 0px;
+    position: sticky;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+}
+
+.navTitle {
+    color: rgb(39, 230, 255);
+    font-family: verdana, Helvetica, sans-serif;
+    font-size: 2rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.navTitle:hover {
+    text-shadow: 1px 0 #fff, -1px 0 #fff, 0 1px #fff, 0 -1px #fff,
+        1px 1px #fff, -1px -1px #fff, 1px -1px #fff, -1px 1px #fff;
+}
+
+.moviesButton {
+    padding: 1rem 2rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.2rem;
+    text-align: center;
+    cursor: pointer;
+    margin: 0 auto;
+}
+
+.moviesButton:hover {
+    background-color: #0056b3;
+}
+
+.LoginButton, .RegisterButton {
+    padding: 0.75rem 1.5rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-left: 0.5rem;
+}
+
+.LoginButton:hover, .RegisterButton:hover {
+    background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .navBar {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .moviesButton {
+        margin-bottom: 1rem;
+    }
+
+    .LoginButton, .RegisterButton {
+        margin-left: 0;
+        margin-bottom: 0.5rem;
+    }
+}
+
+.buttonGroup {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.welcome-message-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 24px auto 20px auto;
+    padding: 18px 32px;
+    background: #23272f;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    width: fit-content;
+    min-width: 260px;
+}
+
+.welcome-message {
+    color: #ffde73;
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    margin: 0;
+}
+
+.searchForm {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.searchBox {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    border: 1px solid #444;
+    background: #222;
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+    width: 300px;
+    margin-right: 0.3rem;
+}
+
+.searchBox:focus {
+    border-color: #00bfff;
+}
+
+.searchBtn {
+    padding: 0.5rem 1rem;
+    background-color: #ff9800;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.searchBtn:hover {
+    background-color: #e65100;
+}
+
+.CartButton, .SettingsButton, .LogoutButton {
+    padding: 0.5rem 1.2rem;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-left: 0.6rem;
+    transition: background 0.2s;
+}
+
+.CartButton:hover {
+    background-color: #1976d2;
+}
+.SettingsButton:hover {
+    background-color: #388e3c;
+}
+.LogoutButton:hover {
+    background-color: #d32f2f;
+}

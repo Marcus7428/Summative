@@ -1,0 +1,132 @@
+.genre-title {
+    font-size: 2.5rem;
+    color: white;
+    margin-bottom: 20px;
+    text-align: center;
+    text-transform: uppercase;
+}
+.genre-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: #4f6cff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.genre-button:hover {
+    background-color: #3e58e7;
+}
+
+.genre-button.selected {
+    background-color: #ff4c4c;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 28px;
+    gap: 16px;
+}
+
+.pagination button {
+    padding: 10px 28px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: white;
+    background-color: #4f6cff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+
+.pagination button:disabled {
+    background-color: #888;
+    cursor: not-allowed;
+}
+
+.pagination span {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #ffffff;
+    padding: 0 10px;
+}
+
+.genre-movies-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.movie-tile {
+    background: #23272f;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    padding: 16px 16px 20px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 220px;
+    min-height: 420px;
+    position: relative;
+}
+
+.movie-poster {
+    width: 180px;
+    height: 270px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+
+.movie-title {
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 12px;
+    text-align: center;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.buy-btn, .added-btn {
+    width: 100%;
+    padding: 0.7rem 0;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: auto;
+    transition: background 0.2s;
+    letter-spacing: 1px;
+}
+
+.buy-btn {
+    background-color: #ff9800;
+    color: #fff;
+}
+
+.buy-btn:hover {
+    background-color: #e65100;
+}
+
+.added-btn {
+    background-color: #388e3c;
+    color: #fff;
+}
+
+.added-btn:hover {
+    background-color: #2e7031;
+}

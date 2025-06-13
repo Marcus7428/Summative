@@ -4,6 +4,9 @@ import "./RegisterView.css";
 import Header from "../components/Header";
 import { UserContext } from "../context";
 import axios from "axios";
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { collection, getDocs, query, where, addDoc } from "firebase/firestore";
+import { auth, firestore } from "../firebase/index.js";
 
 export default function RegisterView() {
     const navigate = useNavigate();
@@ -18,6 +21,9 @@ export default function RegisterView() {
     });
     const [genres, setGenres] = useState([]);
     const [touched, setTouched] = useState({});
+    const [errorMessage, setErrorMessage] = useState("");
+
+    const db = firestore;
 
     useEffect(() => {
         axios
@@ -30,6 +36,88 @@ export default function RegisterView() {
             })
             .catch((error) => console.error("Error fetching genres:", error));
     }, []);
+
+    async function checkEmailExists(email) {
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("email", "==", email));
+        const querySnapshot = await getDocs(q);
+        return !querySnapshot.empty;
+    }
+
+    async function handleEmailRegistration(e) {
+        e.preventDefault();
+        if (!validateForm()) {
+            alert(
+                "Please complete all fields properly:\n- Valid email\n- Matching passwords\n- 5+ genres selected"
+            );
+            return;
+        }
+
+        const emailExists = await checkEmailExists(formData.email);
+        if (emailExists) {
+            setErrorMessage("This email is already registered.");
+            return;
+        }
+
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+            const user = userCredential.user;
+
+            await addDoc(collection(db, "users"), {
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                email: formData.email,
+                genres: formData.genres,
+                uid: user.uid,
+            });
+
+            setUser({
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                email: formData.email,
+                genres: formData.genres,
+            });
+
+            navigate(`/movies`);
+        } catch (error) {
+            console.error("Error registering user:", error);
+            setErrorMessage(error.message);
+        }
+    }
+
+    async function handleGoogleRegistration() {
+        const provider = new GoogleAuthProvider();
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+
+            const emailExists = await checkEmailExists(user.email);
+            if (emailExists) {
+                setErrorMessage("This email is already registered.");
+                return;
+            }
+
+            await addDoc(collection(db, "users"), {
+                firstName: user.displayName.split(" ")[0],
+                lastName: user.displayName.split(" ")[1] || "",
+                email: user.email,
+                genres: [],
+                uid: user.uid,
+            });
+
+            setUser({
+                firstName: user.displayName.split(" ")[0],
+                lastName: user.displayName.split(" ")[1] || "",
+                email: user.email,
+                genres: [],
+            });
+
+            navigate(`/movies`);
+        } catch (error) {
+            console.error("Error with Google registration:", error);
+            setErrorMessage(error.message);
+        }
+    }
 
     function validateEmail(email) {
         return email.includes("@");
@@ -64,40 +152,6 @@ export default function RegisterView() {
         setTouched((prev) => ({ ...prev, [field.name]: true }));
     }
 
-    function handleSubmit(e) {
-        e.preventDefault();
-        if (!validateForm()) {
-            alert(
-                "Please complete all fields properly:\n- Valid email\n- Matching passwords\n- 5+ genres selected"
-            );
-            return;
-        }
-
-        setUser({
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            email: formData.email,
-            password: formData.password,
-            genres: formData.genres,
-        });
-
-        // Find the first genre selected by the user
-        if (formData.genres.length > 0) {
-            const selectedGenreName = formData.genres[0]; // Pick the first genre
-            const selectedGenre = genres.find((genre) => genre.name === selectedGenreName);
-
-            if (selectedGenre) {
-                console.log(`Navigating to /movies/${selectedGenre.id}`); // Debugging log
-                navigate(`/movies/${selectedGenre.id}`); // Navigate to the genre
-                return;
-            }
-        }
-
-        // Fallback: Navigate to /movies if no genre is found
-        console.log("Navigating to /movies");
-        navigate(`/movies`);
-    }
-
     function renderGenresCheckboxes() {
         if (genres.length === 0) return <span>Loading genres...</span>;
         return genres.map((genre) => (
@@ -120,7 +174,8 @@ export default function RegisterView() {
             <div className="register-container">
                 <div className="register-form">
                     <h2 className="register-title">Register</h2>
-                    <form onSubmit={handleSubmit} className="form">
+                    {errorMessage && <p className="error-message">{errorMessage}</p>}
+                    <form onSubmit={handleEmailRegistration} className="form">
                         {["firstName", "lastName"].map((field) => (
                             <div className="form-group" key={field}>
                                 <label className="form-label">{field.split(/(?=[A-Z])/).join(" ")}</label>
@@ -186,9 +241,12 @@ export default function RegisterView() {
                         </div>
 
                         <button type="submit" className="submit-btn" disabled={!validateForm()}>
-                            Register
+                            Register with Email
                         </button>
                     </form>
+                    <button className="google-btn" onClick={handleGoogleRegistration}>
+                        Register with Google
+                    </button>
                 </div>
             </div>
         </>

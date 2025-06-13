@@ -3,7 +3,7 @@ import HomeView from "./views/HomeView";
 import MoviesView from "./views/MoviesView";
 import MovieDetailView from "./views/MovieDetailView";
 import GenreView from "./views/GenreView";
-import SearchView from "./views/SearchView"; // Import SearchView
+import SearchView from "./views/SearchView";
 import LoginView from "./views/LoginView";
 import RegisterView from "./views/RegisterView";
 import ErrorView from "./views/ErrorView";

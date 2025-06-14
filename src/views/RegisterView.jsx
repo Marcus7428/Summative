@@ -5,7 +5,7 @@ import Header from "../components/Header";
 import { UserContext } from "../context";
 import axios from "axios";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { collection, getDocs, query, where, addDoc } from "firebase/firestore";
+import { collection, getDocs, query, where, setDoc, doc } from "firebase/firestore";
 import { auth, firestore } from "../firebase/index.js";
 
 export default function RegisterView() {
@@ -47,8 +47,8 @@ export default function RegisterView() {
     async function handleEmailRegistration(e) {
         e.preventDefault();
         if (!validateForm()) {
-            alert(
-                "Please complete all fields properly:\n- Valid email\n- Matching passwords\n- 5+ genres selected"
+            setErrorMessage(
+                "Please complete all fields properly:\n- Valid email\n- Password at least 6 characters\n- Matching passwords\n- 5+ genres selected"
             );
             return;
         }
@@ -62,8 +62,9 @@ export default function RegisterView() {
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
             const user = userCredential.user;
+            await user.getIdToken(true);
 
-            await addDoc(collection(db, "users"), {
+            await setDoc(doc(db, "users", user.uid), {
                 firstName: formData.firstName,
                 lastName: formData.lastName,
                 email: formData.email,
@@ -78,10 +79,22 @@ export default function RegisterView() {
                 genres: formData.genres,
             });
 
-            navigate(`/movies`);
+            // Automatically load the first selected genre
+            const firstGenreName = formData.genres[0];
+            const firstGenreObj = genres.find(g => g.name === firstGenreName);
+            if (firstGenreObj) {
+                navigate(`/movies/${firstGenreObj.id}`);
+            } else {
+                navigate(`/movies`);
+            }
         } catch (error) {
-            console.error("Error registering user:", error);
-            setErrorMessage(error.message);
+            if (error.code === "auth/invalid-email") {
+                setErrorMessage("Please enter a valid email address.");
+            } else if (error.code === "auth/weak-password") {
+                setErrorMessage("Password must be at least 6 characters.");
+            } else {
+                setErrorMessage(error.message);
+            }
         }
     }
 
@@ -97,40 +110,55 @@ export default function RegisterView() {
                 return;
             }
 
-            await addDoc(collection(db, "users"), {
-                firstName: user.displayName.split(" ")[0],
-                lastName: user.displayName.split(" ")[1] || "",
+            await setDoc(doc(db, "users", user.uid), {
+                firstName: user.displayName ? user.displayName.split(" ")[0] : "",
+                lastName: user.displayName ? user.displayName.split(" ")[1] || "" : "",
                 email: user.email,
                 genres: [],
                 uid: user.uid,
             });
 
             setUser({
-                firstName: user.displayName.split(" ")[0],
-                lastName: user.displayName.split(" ")[1] || "",
+                firstName: user.displayName ? user.displayName.split(" ")[0] : "",
+                lastName: user.displayName ? user.displayName.split(" ")[1] || "" : "",
                 email: user.email,
                 genres: [],
             });
 
+            // If you want to auto-load a genre for Google users, you can pick a default or skip
             navigate(`/movies`);
         } catch (error) {
-            console.error("Error with Google registration:", error);
             setErrorMessage(error.message);
         }
     }
 
     function validateEmail(email) {
-        return email.includes("@");
+        // Checks for "@" and a "." after "@"
+        const atIndex = email.indexOf("@");
+        const dotIndex = email.lastIndexOf(".");
+        return (
+            atIndex > 0 &&
+            dotIndex > atIndex + 1 &&
+            dotIndex < email.length - 1
+        );
     }
 
     function validateForm() {
         const validFirstName = formData.firstName.trim().length > 0;
         const validLastName = formData.lastName.trim().length > 0;
         const validEmail = validateEmail(formData.email);
+        const validPassword = formData.password.length >= 6;
         const passwordsMatch = formData.password === formData.confirmPassword;
         const validGenres = formData.genres.length >= 5;
 
-        return validFirstName && validLastName && validEmail && passwordsMatch && validGenres;
+        return (
+            validFirstName &&
+            validLastName &&
+            validEmail &&
+            validPassword &&
+            passwordsMatch &&
+            validGenres
+        );
     }
 
     function handleChange(e) {
@@ -201,7 +229,7 @@ export default function RegisterView() {
                                 required
                             />
                             {touched.email && !validateEmail(formData.email) && (
-                                <span className="error-message">Invalid email format</span>
+                                <span className="error-message">Email must contain "@" and a "." after "@"</span>
                             )}
                         </div>
 
@@ -215,6 +243,9 @@ export default function RegisterView() {
                                 onChange={handleChange}
                                 required
                             />
+                            {touched.password && formData.password.length > 0 && formData.password.length < 6 && (
+                                <span className="error-message">Password must be at least 6 characters</span>
+                            )}
                         </div>
 
                         <div className="form-group">

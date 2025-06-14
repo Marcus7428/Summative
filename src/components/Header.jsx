@@ -8,14 +8,14 @@ function Header() {
     const { user, setUser } = useContext(UserContext);
     const [search, setSearch] = useState("");
 
-    const isLoggedIn = user && user.email && user.password;
+    // FIX: Only check for user.email, not password
+    const isLoggedIn = user && user.email;
 
     const handleLogout = () => {
         setUser({
             firstName: "",
             lastName: "",
             email: "",
-            password: "",
             genres: [],
         });
         navigate("/login");

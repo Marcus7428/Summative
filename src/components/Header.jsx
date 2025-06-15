@@ -1,17 +1,19 @@
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "./Header.css";
-import { UserContext } from "../context";
+import { UserContext, useUserContext } from "../context";
+import { signOut } from "firebase/auth";
+import { auth, firestore } from "../firebase/index.js";
 
 function Header() {
     const navigate = useNavigate();
-    const { user, setUser } = useContext(UserContext);
+    const { user, setUser, authLoading } = useContext(UserContext);
     const [search, setSearch] = useState("");
 
-    // FIX: Only check for user.email, not password
     const isLoggedIn = user && user.email;
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        await signOut(auth);
         setUser({
             firstName: "",
             lastName: "",
@@ -28,6 +30,8 @@ function Header() {
             setSearch("");
         }
     };
+
+    if (authLoading) return null;
 
     return (
         <div>
@@ -60,7 +64,9 @@ function Header() {
             </div>
             {isLoggedIn && (
                 <div className="welcome-message-box">
-                    <span className="welcome-message">Hello {user.firstName}!</span>
+                    <span className="welcome-message">
+                        Hello {user.firstName ? user.firstName : "User"}!
+                    </span>
                 </div>
             )}
         </div>

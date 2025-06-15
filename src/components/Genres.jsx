@@ -6,6 +6,7 @@ import { UserContext } from "../context";
 
 function Genres() {
     const [genres, setGenres] = useState([]);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const { user } = useContext(UserContext);
 
@@ -20,9 +21,17 @@ function Genres() {
                         [28, 12, 16, 80, 10751, 14, 36, 27, 9648, 878, 10752, 37].includes(genre.id)
                     )
                 );
+                setLoading(false);
             })
-            .catch((error) => console.error("Error fetching genres:", error));
+            .catch((error) => {
+                console.error("Error fetching genres:", error);
+                setLoading(false);
+            });
     }, []);
+
+    if (loading || !user || !user.genres) {
+        return <div className="genres-container"><p>Loading genres...</p></div>;
+    }
 
     const userGenres = genres.filter((genre) =>
         user.genres && user.genres.includes(genre.name)

@@ -62,7 +62,7 @@ html, body {
     box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
 }
 
-.loginForm button {
+.login-btn {
     width: 98%;
     padding: 0.75rem;
     background-color: #007bff;
@@ -72,10 +72,33 @@ html, body {
     font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin-bottom: 10px;
 }
 
-.loginForm button:hover {
+.login-btn:hover {
     background-color: #0056b3;
+}
+
+.google-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    background-color: #db4437;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(219, 68, 55, 0.15);
+    display: block;
+}
+
+.google-btn:hover {
+    background-color: #b83525;
+    color: #fffbe7;
+    box-shadow: 0 4px 16px rgba(219, 68, 55, 0.25);
 }
 
 .loginForm p {
@@ -92,4 +115,10 @@ html, body {
 
 .loginForm p span:hover {
     color: #0056b3;
+}
+
+.error-message {
+    color: #ff4c4c;
+    font-size: 14px;
+    text-align: center;
 }

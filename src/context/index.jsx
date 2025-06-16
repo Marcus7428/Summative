@@ -12,9 +12,18 @@ export const UserProvider = ({ children }) => {
     lastName: "",
     email: "",
     genres: [],
+    purchases: [],
   });
   const [authLoading, setAuthLoading] = useState(true);
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(() => {
+    const stored = localStorage.getItem("cart");
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  // Sync cart to localStorage
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -30,6 +39,7 @@ export const UserProvider = ({ children }) => {
               lastName: data.lastName || "",
               email: data.email || firebaseUser.email,
               genres: Array.isArray(data.genres) ? data.genres : [],
+              purchases: Array.isArray(data.purchases) ? data.purchases : [],
             });
           } else {
             setUser({
@@ -38,6 +48,7 @@ export const UserProvider = ({ children }) => {
               lastName: "",
               email: firebaseUser.email,
               genres: [],
+              purchases: [],
             });
           }
         } catch (err) {
@@ -47,6 +58,7 @@ export const UserProvider = ({ children }) => {
             lastName: "",
             email: firebaseUser.email,
             genres: [],
+            purchases: [],
           });
         }
       } else {
@@ -56,6 +68,7 @@ export const UserProvider = ({ children }) => {
           lastName: "",
           email: "",
           genres: [],
+          purchases: [],
         });
       }
       setAuthLoading(false);

@@ -99,6 +99,10 @@ export default function RegisterView() {
     }
 
     async function handleGoogleRegistration() {
+        if (formData.genres.length < 5) {
+            setErrorMessage("Please select at least 5 genres before registering with Google.");
+            return;
+        }
         const provider = new GoogleAuthProvider();
         try {
             const result = await signInWithPopup(auth, provider);
@@ -114,7 +118,7 @@ export default function RegisterView() {
                 firstName: user.displayName ? user.displayName.split(" ")[0] : "",
                 lastName: user.displayName ? user.displayName.split(" ")[1] || "" : "",
                 email: user.email,
-                genres: [],
+                genres: formData.genres,
                 uid: user.uid,
             });
 
@@ -122,11 +126,17 @@ export default function RegisterView() {
                 firstName: user.displayName ? user.displayName.split(" ")[0] : "",
                 lastName: user.displayName ? user.displayName.split(" ")[1] || "" : "",
                 email: user.email,
-                genres: [],
+                genres: formData.genres,
             });
 
-            // If you want to auto-load a genre for Google users, you can pick a default or skip
-            navigate(`/movies`);
+            // Automatically load the first selected genre
+            const firstGenreName = formData.genres[0];
+            const firstGenreObj = genres.find(g => g.name === firstGenreName);
+            if (firstGenreObj) {
+                navigate(`/movies/${firstGenreObj.id}`);
+            } else {
+                navigate(`/movies`);
+            }
         } catch (error) {
             setErrorMessage(error.message);
         }
@@ -267,7 +277,7 @@ export default function RegisterView() {
                             <label className="form-label">Select Your Favorite Genres (at least 5):</label>
                             <div className="genres-checkboxes">{renderGenresCheckboxes()}</div>
                             {touched.genres && formData.genres.length < 5 && (
-                                <span className="error-message">Select at least 5 genres</span>
+                                <span className="error-message select-genres">Please select at least 5 genres</span>
                             )}
                         </div>
 
@@ -275,9 +285,18 @@ export default function RegisterView() {
                             Register with Email
                         </button>
                     </form>
-                    <button className="google-btn" onClick={handleGoogleRegistration}>
+                    <button
+                        className="google-btn"
+                        onClick={handleGoogleRegistration}
+                        disabled={formData.genres.length < 5}
+                    >
                         Register with Google
                     </button>
+                    {formData.genres.length < 5 && (
+                        <p className="error-message" style={{ marginTop: 18, color: "#fff" }}>
+                            Select at least 5 genres before registering with Google.
+                        </p>
+                    )}
                 </div>
             </div>
         </>

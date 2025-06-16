@@ -9,21 +9,35 @@ import RegisterView from "./views/RegisterView";
 import ErrorView from "./views/ErrorView";
 import CartView from "./views/CartView";
 import SettingView from "./views/SettingView";
+import PrivateRoute from "./components/ProtectedRoutes";
 
 function App() {
     return (
         <Router>
             <Routes>
                 <Route path="/" element={<HomeView />} />
-                <Route path="/movies" element={<MoviesView />}>
+                <Route path="/login" element={<LoginView />} />
+                <Route path="/register" element={<RegisterView />} />
+                {/* Protected routes below */}
+                <Route path="/movies" element={
+                    <PrivateRoute>
+                        <MoviesView />
+                    </PrivateRoute>
+                }>
                     <Route path="details/:id" element={<MovieDetailView />} />
                     <Route path=":genre_id" element={<GenreView />} />
                     <Route path="search" element={<SearchView />} />
                 </Route>
-                <Route path="/cart" element={<CartView />} />
-                <Route path="/settings" element={<SettingView />} />
-                <Route path="/login" element={<LoginView />} />
-                <Route path="/register" element={<RegisterView />} />
+                <Route path="/cart" element={
+                    <PrivateRoute>
+                        <CartView />
+                    </PrivateRoute>
+                } />
+                <Route path="/settings" element={
+                    <PrivateRoute>
+                        <SettingView />
+                    </PrivateRoute>
+                } />
                 <Route path="*" element={<ErrorView />} />
             </Routes>
         </Router>

@@ -8,7 +8,7 @@ function GenreView() {
     const { genre_id } = useParams();
     const [movies, setMovies] = useState([]);
     const [page, setPage] = useState(1);
-    const { cart, setCart } = useContext(UserContext);
+    const { cart, setCart, user } = useContext(UserContext);
 
     useEffect(() => {
         axios
@@ -24,7 +24,10 @@ function GenreView() {
     }, [genre_id, page]);
 
     const handleBuy = (movie) => {
-        if (!cart.some((item) => item.id === movie.id)) {
+        if (
+            !cart.some((item) => item.id === movie.id) &&
+            !(user.purchases || []).includes(movie.id)
+        ) {
             setCart([...cart, movie]);
         }
     };
@@ -39,6 +42,7 @@ function GenreView() {
         <div className="genre-movies-grid">
             {movies.map((movie) => {
                 const inCart = cart.some((item) => item.id === movie.id);
+                const purchased = (user.purchases || []).includes(movie.id);
                 return (
                     <div key={movie.id} className="movie-tile">
                         <Link to={`/movies/details/${movie.id}`} style={{ textDecoration: "none", color: "inherit" }}>
@@ -53,13 +57,19 @@ function GenreView() {
                             />
                             <div className="movie-title">{movie.title}</div>
                         </Link>
-                        {!inCart ? (
-                            <button className="buy-btn" onClick={() => handleBuy(movie)}>
-                                Buy
-                            </button>
+                        {!purchased ? (
+                            !inCart ? (
+                                <button className="buy-btn" onClick={() => handleBuy(movie)}>
+                                    Buy
+                                </button>
+                            ) : (
+                                <button className="added-btn" onClick={() => handleRemove(movie)}>
+                                    Added to cart
+                                </button>
+                            )
                         ) : (
-                            <button className="added-btn" onClick={() => handleRemove(movie)}>
-                                Added to cart
+                            <button className="added-btn" disabled>
+                                Purchased
                             </button>
                         )}
                     </div>

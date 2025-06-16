@@ -60,7 +60,25 @@
 }
 
 .save-btn:hover {
-    background: linear-gradient(90deg, #e65100, #ff9800 80%);
+    background: linear-gradient(90deg, rgb(199, 78, 12), #b94100 80%);
     color: #fffbe7;
     transform: translateY(-2px) scale(1.04);
+}
+
+.show-password-btn {
+    margin-left: 10px;
+    padding: 6px 14px;
+    border: none;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #e65100, #ff9800 80%);
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.show-password-btn:hover {
+    background: linear-gradient(90deg, #b84000, #db8400 80%);
+    color: #fffbe7;
 }

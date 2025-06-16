@@ -18,11 +18,11 @@ function CartView() {
         if (!user.uid) return;
         try {
             const userDocRef = doc(firestore, "users", user.uid);
-            // Add purchased movies to Firestore
+
             await updateDoc(userDocRef, {
                 purchases: arrayUnion(...cart.map((m) => m.id)),
             });
-            // Update context
+
             setUser({
                 ...user,
                 purchases: [...(user.purchases || []), ...cart.map((m) => m.id)],
@@ -35,9 +35,6 @@ function CartView() {
             console.error(err);
         }
     };
-
-    // Prevent adding already purchased movies (in GenreView, etc.)
-    // In CartView, just show the cart and checkout
 
     return (
         <>
@@ -72,7 +69,7 @@ function CartView() {
                                 </div>
                             ))}
                         </div>
-                        <button className="save-btn" onClick={handleCheckout} style={{marginTop: 24, width: 200, fontSize: "1.1rem"}}>
+                        <button className="save-btn" onClick={handleCheckout} style={{ marginTop: 24, width: 200, fontSize: "1.1rem" }}>
                             Checkout
                         </button>
                     </>

@@ -62,7 +62,6 @@ function LoginView() {
             user.uid
         ) {
             if (user.genres && user.genres.length > 0 && allowedGenres.length > 0) {
-                // Find the first allowed genre the user selected
                 const firstAllowedGenre = allowedGenres.find(g => user.genres.includes(g.name));
                 if (firstAllowedGenre) {
                     navigate(`/movies/${firstAllowedGenre.id}`);
@@ -70,7 +69,6 @@ function LoginView() {
                     navigate("/movies");
                 }
             } else {
-                // No genres selected, force user to settings
                 navigate("/settings");
             }
         }

@@ -20,7 +20,6 @@ export const UserProvider = ({ children }) => {
     return stored ? JSON.parse(stored) : [];
   });
 
-  // Sync cart to localStorage
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);

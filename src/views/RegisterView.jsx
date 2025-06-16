@@ -79,7 +79,6 @@ export default function RegisterView() {
                 genres: formData.genres,
             });
 
-            // Automatically load the first selected genre
             const firstGenreName = formData.genres[0];
             const firstGenreObj = genres.find(g => g.name === firstGenreName);
             if (firstGenreObj) {
@@ -129,7 +128,6 @@ export default function RegisterView() {
                 genres: formData.genres,
             });
 
-            // Automatically load the first selected genre
             const firstGenreName = formData.genres[0];
             const firstGenreObj = genres.find(g => g.name === firstGenreName);
             if (firstGenreObj) {
@@ -143,7 +141,6 @@ export default function RegisterView() {
     }
 
     function validateEmail(email) {
-        // Checks for "@" and a "." after "@"
         const atIndex = email.indexOf("@");
         const dotIndex = email.lastIndexOf(".");
         return (

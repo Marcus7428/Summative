@@ -36,7 +36,6 @@ function SettingView() {
             .catch((error) => console.error("Error fetching genres:", error));
     }, []);
 
-    // Fetch purchased movie details
     useEffect(() => {
         async function fetchPurchasedMovies() {
             if (user.purchases && user.purchases.length > 0) {
@@ -98,7 +97,13 @@ function SettingView() {
                 }
             }
             alert("Settings saved!");
-            navigate("/movies");
+            const firstGenreName = selectedGenres[0];
+            const firstGenreObj = allGenres.find(g => g.name === firstGenreName);
+            if (firstGenreObj) {
+                navigate(`/movies/${firstGenreObj.id}`);
+            } else {
+                navigate("/movies");
+            }
         } catch (err) {
             alert("Failed to save settings.");
             console.error(err);

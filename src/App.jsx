@@ -18,7 +18,6 @@ function App() {
                 <Route path="/" element={<HomeView />} />
                 <Route path="/login" element={<LoginView />} />
                 <Route path="/register" element={<RegisterView />} />
-                {/* Protected routes below */}
                 <Route path="/movies" element={
                     <PrivateRoute>
                         <MoviesView />

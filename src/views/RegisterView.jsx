@@ -23,7 +23,6 @@ export default function RegisterView() {
     const [touched, setTouched] = useState({});
     const [errorMessage, setErrorMessage] = useState("");
 
-    // Fetch allowed genres for both form and redirect
     useEffect(() => {
         axios
             .get(`https://api.themoviedb.org/3/genre/movie/list?api_key=${import.meta.env.VITE_TMDB_KEY}`)
@@ -36,7 +35,6 @@ export default function RegisterView() {
             .catch((error) => console.error("Error fetching genres:", error));
     }, []);
 
-    // Redirect after authentication and genres are loaded
     useEffect(() => {
         if (!authLoading && user && user.uid && user.genres && user.genres.length > 0 && genres.length > 0) {
             const firstGenreName = user.genres[0];
@@ -84,7 +82,6 @@ export default function RegisterView() {
                 uid: user.uid,
             });
 
-            // Do NOT call setUser or navigate here. Let context and useEffect handle it.
         } catch (error) {
             if (error.code === "auth/invalid-email") {
                 setErrorMessage("Please enter a valid email address.");
@@ -97,34 +94,38 @@ export default function RegisterView() {
     }
 
     async function handleGoogleRegistration() {
-        if (formData.genres.length < 5) {
-            setErrorMessage("Please select at least 5 genres before registering with Google.");
+    if (formData.genres.length < 5) {
+        setErrorMessage("Please select at least 5 genres before registering with Google.");
+        return;
+    }
+
+    const provider = new GoogleAuthProvider();
+    try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        const emailExists = await checkEmailExists(user.email);
+        if (emailExists) {
+            setErrorMessage("This email is already registered.");
             return;
         }
-        const provider = new GoogleAuthProvider();
-        try {
-            const result = await signInWithPopup(auth, provider);
-            const user = result.user;
 
-            const emailExists = await checkEmailExists(user.email);
-            if (emailExists) {
-                setErrorMessage("This email is already registered.");
-                return;
-            }
+        await setDoc(doc(firestore, "users", user.uid), {
+            firstName: user.displayName ? user.displayName.split(" ")[0] : "",
+            lastName: user.displayName ? user.displayName.split(" ")[1] || "" : "",
+            email: user.email,
+            genres: formData.genres,
+            uid: user.uid,
+        });
 
-            await setDoc(doc(firestore, "users", user.uid), {
-                firstName: user.displayName ? user.displayName.split(" ")[0] : "",
-                lastName: user.displayName ? user.displayName.split(" ")[1] || "" : "",
-                email: user.email,
-                genres: formData.genres,
-                uid: user.uid,
-            });
+        await user.getIdToken(true);
 
-            // Do NOT call setUser or navigate here. Let context and useEffect handle it.
-        } catch (error) {
-            setErrorMessage(error.message);
-        }
+        window.location.reload();
+
+    } catch (error) {
+        setErrorMessage(error.message);
     }
+}
 
     function validateEmail(email) {
         const atIndex = email.indexOf("@");

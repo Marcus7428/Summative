@@ -62,10 +62,10 @@ function Header() {
                     )}
                 </div>
             </div>
-            {isLoggedIn && (
+            {!authLoading && isLoggedIn && (
                 <div className="welcome-message-box">
                     <span className="welcome-message">
-                        Hello {user.firstName ? user.firstName : "User"}!
+                        Hello {user.firstName}!
                     </span>
                 </div>
             )}

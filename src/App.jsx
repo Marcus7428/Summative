@@ -9,7 +9,7 @@ import RegisterView from "./views/RegisterView";
 import ErrorView from "./views/ErrorView";
 import CartView from "./views/CartView";
 import SettingView from "./views/SettingView";
-import PrivateRoute from "./components/ProtectedRoutes";
+import PrivateRoute from "./components/PrivateRoutes";
 
 function App() {
     return (

@@ -10,7 +10,7 @@ import { auth, firestore } from "../firebase/index.js";
 
 export default function RegisterView() {
     const navigate = useNavigate();
-    const { setUser } = useContext(UserContext);
+    const { user, authLoading } = useContext(UserContext);
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
@@ -23,8 +23,7 @@ export default function RegisterView() {
     const [touched, setTouched] = useState({});
     const [errorMessage, setErrorMessage] = useState("");
 
-    const db = firestore;
-
+    // Fetch allowed genres for both form and redirect
     useEffect(() => {
         axios
             .get(`https://api.themoviedb.org/3/genre/movie/list?api_key=${import.meta.env.VITE_TMDB_KEY}`)
@@ -37,8 +36,21 @@ export default function RegisterView() {
             .catch((error) => console.error("Error fetching genres:", error));
     }, []);
 
+    // Redirect after authentication and genres are loaded
+    useEffect(() => {
+        if (!authLoading && user && user.uid && user.genres && user.genres.length > 0 && genres.length > 0) {
+            const firstGenreName = user.genres[0];
+            const firstGenreObj = genres.find(g => g.name === firstGenreName);
+            if (firstGenreObj) {
+                navigate(`/movies/${firstGenreObj.id}`);
+            } else {
+                navigate("/movies");
+            }
+        }
+    }, [authLoading, user, genres, navigate]);
+
     async function checkEmailExists(email) {
-        const usersRef = collection(db, "users");
+        const usersRef = collection(firestore, "users");
         const q = query(usersRef, where("email", "==", email));
         const querySnapshot = await getDocs(q);
         return !querySnapshot.empty;
@@ -64,7 +76,7 @@ export default function RegisterView() {
             const user = userCredential.user;
             await user.getIdToken(true);
 
-            await setDoc(doc(db, "users", user.uid), {
+            await setDoc(doc(firestore, "users", user.uid), {
                 firstName: formData.firstName,
                 lastName: formData.lastName,
                 email: formData.email,
@@ -72,20 +84,7 @@ export default function RegisterView() {
                 uid: user.uid,
             });
 
-            setUser({
-                firstName: formData.firstName,
-                lastName: formData.lastName,
-                email: formData.email,
-                genres: formData.genres,
-            });
-
-            const firstGenreName = formData.genres[0];
-            const firstGenreObj = genres.find(g => g.name === firstGenreName);
-            if (firstGenreObj) {
-                navigate(`/movies/${firstGenreObj.id}`);
-            } else {
-                navigate(`/movies`);
-            }
+            // Do NOT call setUser or navigate here. Let context and useEffect handle it.
         } catch (error) {
             if (error.code === "auth/invalid-email") {
                 setErrorMessage("Please enter a valid email address.");
@@ -113,7 +112,7 @@ export default function RegisterView() {
                 return;
             }
 
-            await setDoc(doc(db, "users", user.uid), {
+            await setDoc(doc(firestore, "users", user.uid), {
                 firstName: user.displayName ? user.displayName.split(" ")[0] : "",
                 lastName: user.displayName ? user.displayName.split(" ")[1] || "" : "",
                 email: user.email,
@@ -121,20 +120,7 @@ export default function RegisterView() {
                 uid: user.uid,
             });
 
-            setUser({
-                firstName: user.displayName ? user.displayName.split(" ")[0] : "",
-                lastName: user.displayName ? user.displayName.split(" ")[1] || "" : "",
-                email: user.email,
-                genres: formData.genres,
-            });
-
-            const firstGenreName = formData.genres[0];
-            const firstGenreObj = genres.find(g => g.name === firstGenreName);
-            if (firstGenreObj) {
-                navigate(`/movies/${firstGenreObj.id}`);
-            } else {
-                navigate(`/movies`);
-            }
+            // Do NOT call setUser or navigate here. Let context and useEffect handle it.
         } catch (error) {
             setErrorMessage(error.message);
         }
@@ -202,6 +188,8 @@ export default function RegisterView() {
             </label>
         ));
     }
+
+    if (authLoading) return <div>Loading...</div>;
 
     return (
         <>

@@ -16,7 +16,7 @@ function MoviesView() {
     const [allowedGenres, setAllowedGenres] = useState([]);
 
     useEffect(() => {
-        axiosf
+        axios
             .get(`https://api.themoviedb.org/3/genre/movie/list`, {
                 params: { api_key: import.meta.env.VITE_TMDB_KEY },
             })
